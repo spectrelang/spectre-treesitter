@@ -165,7 +165,11 @@ module.exports = grammar({
       $.break_stmt
     ),
 
-    return_stmt: $ => seq('return', optional($.expression)),
+    return_stmt: $ => prec.right(seq(
+      'return',
+      optional($.expression)
+    )),
+
     break_stmt: _ => 'break',
 
     defer_stmt: $ => seq(
@@ -268,17 +272,18 @@ module.exports = grammar({
       'none'
     ),
 
+
     composite_literal: $ => seq(
       '{',
-      optional(sepBy(',', seq($.identifier, ':', $.expression))),
+      sepBy1(',', seq($.identifier, ':', $.expression)),
+      optional(','),
       '}'
     ),
-
-    assignment: $ => seq(
+    assignment: $ => prec.right(1, seq(
       $.expression,
       '=',
       $.expression
-    ),
+    )),
 
     call_expr: $ => seq(
       $.expression,
@@ -293,25 +298,28 @@ module.exports = grammar({
       $.identifier
     ),
 
-    unary_expr: $ => seq(
+    unary_expr: $ => prec(11, seq(
       choice('!', '-', '@'),
       $.expression
-    ),
-
-    binary_expr: $ => prec.left(choice(
-      seq($.expression, '==', $.expression),
-      seq($.expression, '!=', $.expression),
-      seq($.expression, '<', $.expression),
-      seq($.expression, '>', $.expression),
-      seq($.expression, '<=', $.expression),
-      seq($.expression, '>=', $.expression),
-      seq($.expression, '&&', $.expression),
-      seq($.expression, '||', $.expression),
-      seq($.expression, '+', $.expression),
-      seq($.expression, '-', $.expression),
-      seq($.expression, '*', $.expression),
-      seq($.expression, '/', $.expression),
     )),
+    binary_expr: $ => choice(
+      prec.left(10, seq($.expression, '*', $.expression)),
+      prec.left(10, seq($.expression, '/', $.expression)),
+
+      prec.left(9, seq($.expression, '+', $.expression)),
+      prec.left(9, seq($.expression, '-', $.expression)),
+
+      prec.left(8, seq($.expression, '<', $.expression)),
+      prec.left(8, seq($.expression, '>', $.expression)),
+      prec.left(8, seq($.expression, '<=', $.expression)),
+      prec.left(8, seq($.expression, '>=', $.expression)),
+
+      prec.left(7, seq($.expression, '==', $.expression)),
+      prec.left(7, seq($.expression, '!=', $.expression)),
+
+      prec.left(6, seq($.expression, '&&', $.expression)),
+      prec.left(5, seq($.expression, '||', $.expression)),
+    ),
   }
 });
 
