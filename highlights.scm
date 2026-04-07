@@ -1,63 +1,32 @@
+((identifier) @keyword
+  (#match? @keyword "^(fn|val|type|union|enum|extern|return|if|elif|else|for|in|match|break|defer|when|test|pub)$"))
 
-[
-  "fn"
-  "val"
-  "type"
-  "union"
-  "enum"
-  "extern"
-  "return"
-  "if"
-  "elif"
-  "else"
-  "for"
-  "in"
-  "match"
-  "break"
-  "defer"
-  "when"
-  "test"
-] @keyword
+((identifier) @keyword.special
+  (#match? @keyword.special "^(pre|post|guarded|trust)$"))
 
-[
-  "pub"
-] @keyword.storage
+((identifier) @constant.builtin
+  (#match? @constant.builtin "^(true|false|none)$"))
 
-[
-  "pre"
-  "post"
-  "guarded"
-  "trust"
-] @keyword.special
-
-[
-  "some"
-  "none"
-  "ok"
-  "err"
-] @keyword
-
-[
-  "true"
-  "false"
-] @constant.builtin
-
-(type) @type
-(type_decl name: (identifier) @type)
-(enum_decl (identifier) @type)
-(union_decl (identifier) @type)
+((identifier) @keyword
+  (#match? @keyword "^(some|ok|err)$"))
 
 (fn_decl
-  name: (identifier) @function)
+  (identifier) @function)
 
-(call_expr
-  function: (identifier) @function.call)
+(type) @type
 
-(field_access
-  field: (identifier) @function.method)
+(type_decl
+  (identifier) @type)
+
+(enum_decl
+  (identifier) @type)
+
+(union_decl
+  (identifier) @type)
+
 
 (val_decl
-  name: (identifier) @variable)
+  (identifier) @variable)
 
 (parameter
   (identifier) @variable.parameter)
@@ -65,12 +34,17 @@
 (field_decl
   (identifier) @property)
 
+
+(field_access
+  (identifier) @property)
+
+
 (pattern
   (identifier) @constant)
 
-
 (number) @constant.numeric
 (string) @string
+
 
 (comment) @comment
 
@@ -91,6 +65,8 @@
   "="
 ] @operator
 
+"!" @operator
+
 [
   "("
   ")"
@@ -107,7 +83,6 @@
   ";"
 ] @punctuation.delimiter
 
+
 (unary_expr
   "@" @function.builtin)
-
-"!" @operator
